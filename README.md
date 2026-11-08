@@ -1,1 +1,1 @@
-# Remind-AI
+# RemindAI-AI Voice Reminder Assistant.
