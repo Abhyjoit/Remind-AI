@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import {
   Search,
   Bell,
@@ -20,9 +21,10 @@ import {
   Bot,
   Server,
   Activity,
-  CircleAlert,
   User,
+  X,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const statistics = [
   {
@@ -93,6 +95,25 @@ const recentCalls = [
   },
 ];
 
+const searchableTasks = [
+  {
+    name: "Client Follow-up",
+    detail: "10:00 AM · Scheduled Task",
+    page: "/scheduled-tasks",
+  },
+  {
+    name: "Project Update Call",
+    detail: "2:00 PM · Scheduled Task",
+    page: "/scheduled-tasks",
+  },
+  {
+    name: "Doctor Appointment Reminder",
+    detail: "4:30 PM · Scheduled Task",
+    page: "/scheduled-tasks",
+  },
+];
+
+
 const completionTrend = [
   { day: "Mon", value: 45 },
   { day: "Tue", value: 65 },
@@ -135,6 +156,50 @@ const activities = [
 ];
 
 function Dashboard() {
+  const navigate = useNavigate();
+
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notificationsRead, setNotificationsRead] = useState(false);
+
+
+const [searchQuery, setSearchQuery] = useState("");
+const [searchOpen, setSearchOpen] = useState(false);
+
+const query = searchQuery.trim().toLowerCase();
+
+const searchResults = query
+  ? [
+      ...recentCalls
+        .filter(
+          (call) =>
+            call.name.toLowerCase().includes(query) ||
+            call.task.toLowerCase().includes(query)
+        )
+        .map((call) => ({
+          name: call.name,
+          detail: `${call.task} · Call History`,
+          page: "/call-history",
+          icon: PhoneCall,
+        })),
+
+      ...searchableTasks
+        .filter(
+          (task) =>
+            task.name.toLowerCase().includes(query)
+        )
+        .map((task) => ({
+          ...task,
+          icon: CalendarDays,
+        })),
+    ]
+  : [];
+
+const openSearchResult = (page) => {
+  setSearchQuery("");
+  setSearchOpen(false);
+  navigate(page);
+};
+
   return (
     <div className="page-content dashboard-page">
       {/* Dashboard Header */}
@@ -146,21 +211,135 @@ function Dashboard() {
         </div>
 
         <div className="dashboard-header-actions">
-          <div className="dashboard-search">
-            <Search size={19} />
-            <input
-              type="search"
-              placeholder="Search tasks, calls, reminders..."
-            />
-            <span>⌘K</span>
+          
+<div className="dashboard-search-wrapper">
+  <div className="dashboard-search">
+    <Search size={19} />
+
+    <input
+      type="search"
+      placeholder="Search tasks, calls, reminders..."
+      value={searchQuery}
+      onChange={(e) => {
+        setSearchQuery(e.target.value);
+        setSearchOpen(true);
+      }}
+      onFocus={() => setSearchOpen(true)}
+    />
+
+    <span>⌘K</span>
+  </div>
+
+  {searchOpen && query && (
+    <div className="dashboard-search-results">
+      <div className="dashboard-search-results-header">
+        Search Results ({searchResults.length})
+      </div>
+
+      {searchResults.length > 0 ? (
+        searchResults.map((result, index) => {
+          const Icon = result.icon;
+
+          return (
+            <button
+              className="dashboard-search-result"
+              key={`${result.name}-${index}`}
+              onClick={() => openSearchResult(result.page)}
+            >
+              <span className="dashboard-search-result-icon">
+                <Icon size={17} />
+              </span>
+
+              <span className="dashboard-search-result-info">
+                <strong>{result.name}</strong>
+                <span>{result.detail}</span>
+              </span>
+            </button>
+          );
+        })
+      ) : (
+        <div className="dashboard-search-empty">
+          No matching tasks or calls found.
+        </div>
+      )}
+    </div>
+  )}
+</div>
+
+
+          {/* Notifications */}
+          <div className="notification-wrapper">
+            <button
+              className="notification-button"
+              aria-label="Notifications"
+              aria-expanded={notificationsOpen}
+              onClick={() => setNotificationsOpen(!notificationsOpen)}
+            >
+              <Bell size={21} />
+              {!notificationsRead && (
+                <span className="notification-dot"></span>
+              )}
+            </button>
+
+            {notificationsOpen && (
+              <div className="dashboard-notification-dropdown">
+                <div className="notification-dropdown-header">
+                  <div>
+                    <h3>Notifications</h3>
+                    <span>
+                      {notificationsRead
+                        ? "All caught up"
+                        : "You have new activity"}
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => setNotificationsOpen(false)}
+                    aria-label="Close notifications"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <div className="notification-dropdown-list">
+                  {activities.map((activity, index) => {
+                    const Icon = activity.icon;
+
+                    return (
+                      <div
+                        className="dashboard-notification-item"
+                        key={`${activity.title}-${index}`}
+                      >
+                        <span className={`activity-icon ${activity.type}`}>
+                          <Icon size={17} />
+                        </span>
+
+                        <div>
+                          <strong>{activity.title}</strong>
+                          <p>{activity.description}</p>
+                          <small>{activity.time}</small>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="notification-dropdown-footer">
+                  <button
+                    onClick={() => setNotificationsRead(true)}
+                  >
+                    Mark all as read
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
-          <button className="notification-button" aria-label="Notifications">
-            <Bell size={21} />
-            <span className="notification-dot"></span>
-          </button>
-
-          <button className="create-reminder-button">
+          {/* Create Reminder */}
+          <button
+            className="create-reminder-button"
+            onClick={() => navigate("/scheduled-tasks?create=1")}
+          >
             <Plus size={20} />
             Create Reminder
           </button>

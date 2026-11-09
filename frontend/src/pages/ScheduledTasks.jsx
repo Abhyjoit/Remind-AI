@@ -1,5 +1,6 @@
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   CalendarDays,
   ChevronLeft,
@@ -61,12 +62,16 @@ const emptyForm = {
 };
 
 function ScheduledTasks() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [currentMonth, setCurrentMonth] = useState(
     new Date(today.getFullYear(), today.getMonth(), 1)
   );
   const [selectedDate, setSelectedDate] = useState(todayKey);
   const [tasks, setTasks] = useState(initialTasks);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(
+    () => searchParams.get("create") === "1"
+  );
   const [editingTask, setEditingTask] = useState(null);
   const [form, setForm] = useState(emptyForm);
 
@@ -113,7 +118,9 @@ function ScheduledTasks() {
 
   const upcomingTasks = tasks
     .filter((task) => task.date >= todayKey)
-    .sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`));
+    .sort((a, b) =>
+      `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`)
+    );
 
   const completedCount = tasks.filter(
     (task) => task.status === "Completed"
@@ -147,6 +154,13 @@ function ScheduledTasks() {
     setForm(emptyForm);
     setModalOpen(true);
   };
+
+  // Clear the URL parameter after opening the creation modal.
+  useEffect(() => {
+    if (searchParams.get("create") === "1") {
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const openEditModal = (task) => {
     setEditingTask(task);
@@ -189,10 +203,13 @@ function ScheduledTasks() {
     }
 
     setSelectedDate(form.date);
+
     const chosenDate = new Date(`${form.date}T12:00:00`);
+
     setCurrentMonth(
       new Date(chosenDate.getFullYear(), chosenDate.getMonth(), 1)
     );
+
     closeModal();
   };
 
@@ -202,7 +219,9 @@ function ScheduledTasks() {
     );
 
     if (confirmed) {
-      setTasks((previous) => previous.filter((task) => task.id !== id));
+      setTasks((previous) =>
+        previous.filter((task) => task.id !== id)
+      );
     }
   };
 
@@ -212,7 +231,8 @@ function ScheduledTasks() {
         item.id === task.id
           ? {
               ...item,
-              status: item.status === "Completed" ? "Active" : "Completed",
+              status:
+                item.status === "Completed" ? "Active" : "Completed",
             }
           : item
       )
@@ -221,6 +241,7 @@ function ScheduledTasks() {
 
   const formatTaskDate = (dateKey) => {
     const date = new Date(`${dateKey}T12:00:00`);
+
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -230,8 +251,16 @@ function ScheduledTasks() {
 
   const formatTime = (time) => {
     const [hours, minutes] = time.split(":");
-    const date = new Date();
-    date.setHours(Number(hours), Number(minutes), 0, 0);
+
+    const date = new Date(
+      2000,
+      0,
+      1,
+      Number(hours),
+      Number(minutes),
+      0,
+      0
+    );
 
     return date.toLocaleTimeString("en-US", {
       hour: "numeric",
@@ -348,6 +377,7 @@ function ScheduledTasks() {
               const dayTasks = tasks.filter(
                 (task) => task.date === day.key
               );
+
               const isToday = day.key === todayKey;
               const isSelected = day.key === selectedDate;
 
@@ -377,8 +407,12 @@ function ScheduledTasks() {
           </div>
 
           <div className="calendar-footer">
-            <span><i className="calendar-legend-dot"></i> Scheduled reminders</span>
-            <span><i className="calendar-legend-today"></i> Today</span>
+            <span>
+              <i className="calendar-legend-dot"></i> Scheduled reminders
+            </span>
+            <span>
+              <i className="calendar-legend-today"></i> Today
+            </span>
           </div>
         </article>
 
@@ -465,8 +499,12 @@ function ScheduledTasks() {
               className="show-upcoming-button"
               onClick={() => {
                 setSelectedDate(upcomingTasks[0]?.date || todayKey);
+
                 if (upcomingTasks[0]) {
-                  const date = new Date(`${upcomingTasks[0].date}T12:00:00`);
+                  const date = new Date(
+                    `${upcomingTasks[0].date}T12:00:00`
+                  );
+
                   setCurrentMonth(
                     new Date(date.getFullYear(), date.getMonth(), 1)
                   );
@@ -527,6 +565,7 @@ function ScheduledTasks() {
                   >
                     <Pencil size={15} />
                   </button>
+
                   <button
                     onClick={() => deleteTask(task.id)}
                     aria-label="Cancel reminder"

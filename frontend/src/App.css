@@ -204,6 +204,11 @@
   gap: 16px;
 }
 
+
+.dashboard-search-wrapper {
+  position: relative;
+}
+
 .dashboard-search {
   display: flex;
   align-items: center;
@@ -240,6 +245,95 @@
   font-size: 11px;
 }
 
+/* Dashboard search results dropdown */
+.dashboard-search-results {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  width: 100%;
+  min-width: 320px;
+  background: #ffffff;
+  border: 1px solid #eee9fa;
+  border-radius: 14px;
+  box-shadow: 0 12px 35px rgba(45, 30, 90, 0.14);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.dashboard-search-results-header {
+  padding: 13px 15px;
+  border-bottom: 1px solid #eeeaf6;
+  color: #88829d;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.dashboard-search-result {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 12px 15px;
+  border: none;
+  border-bottom: 1px solid #f1eef7;
+  background: #ffffff;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.dashboard-search-result:hover {
+  background: #f8f6fd;
+}
+
+.dashboard-search-result:last-child {
+  border-bottom: none;
+}
+
+.dashboard-search-result-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #f0ebfc;
+  color: #7446e8;
+}
+
+.dashboard-search-result-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.dashboard-search-result-info strong {
+  color: #292342;
+  font-size: 12px;
+}
+
+.dashboard-search-result-info span {
+  color: #88829d;
+  font-size: 10px;
+}
+
+.dashboard-search-empty {
+  padding: 20px 15px;
+  color: #88829d;
+  font-size: 12px;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .dashboard-search-results {
+    min-width: 0;
+    width: min(320px, calc(100vw - 30px));
+  }
+}
+
+
 .notification-button {
   position: relative;
   width: 46px;
@@ -252,6 +346,132 @@
   background: #ffffff;
   color: #292342;
   box-shadow: var(--shadow);
+}
+
+/* Notification dropdown */
+.notification-wrapper {
+  position: relative;
+}
+
+.notification-button {
+  cursor: pointer;
+}
+
+.notification-button:hover {
+  background: #f8f5ff;
+  color: #7446e8;
+}
+
+.dashboard-notification-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 350px;
+  max-width: calc(100vw - 30px);
+  background: #ffffff;
+  border: 1px solid #eee9fa;
+  border-radius: 16px;
+  box-shadow: 0 12px 35px rgba(45, 30, 90, 0.14);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.notification-dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 17px 18px;
+  border-bottom: 1px solid #eeeaf6;
+}
+
+.notification-dropdown-header h3 {
+  margin: 0 0 4px;
+  color: #292342;
+  font-size: 15px;
+}
+
+.notification-dropdown-header span {
+  color: #88829d;
+  font-size: 11px;
+}
+
+.notification-dropdown-header button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: #f5f2fb;
+  color: #77718f;
+  cursor: pointer;
+}
+
+.notification-dropdown-list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.dashboard-notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px 18px;
+  border-bottom: 1px solid #f1eef7;
+}
+
+.dashboard-notification-item:last-child {
+  border-bottom: none;
+}
+
+.dashboard-notification-item > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-notification-item strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #292342;
+  font-size: 12px;
+}
+
+.dashboard-notification-item p {
+  margin: 0 0 5px;
+  color: #77718f;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.dashboard-notification-item small {
+  color: #a09ab2;
+  font-size: 10px;
+}
+
+.notification-dropdown-footer {
+  padding: 12px 18px;
+  border-top: 1px solid #eeeaf6;
+  text-align: center;
+}
+
+.notification-dropdown-footer button {
+  border: none;
+  background: transparent;
+  color: #7446e8;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.notification-dropdown-footer button:hover {
+  color: #5125c9;
+}
+
+.notification-button,
+.notification-dropdown-header button,
+.notification-dropdown-footer button {
+  transition: 0.2s ease;
 }
 
 .notification-dot {
@@ -706,7 +926,6 @@
   }
 }
 
-
 /* Recent Calls and Task Completion Trend */
 .dashboard-lower-grid {
   display: grid;
@@ -1109,13 +1328,13 @@
    SCHEDULED TASKS PAGE
 ======================================== */
 
+/* Page header */
 .scheduled-page {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-/* Page header */
 .scheduled-header {
   display: flex;
   align-items: center;
@@ -1924,10 +2143,6 @@
   }
 }
 
-
-
-
-
 /* ========================================
    CALL HISTORY PAGE
 ======================================== */
@@ -1938,7 +2153,6 @@
   gap: 27px;
 }
 
-/* Header */
 .call-history-header h1 {
   margin: 0 0 7px;
   color: #17152c;
@@ -2542,7 +2756,6 @@
   }
 }
 
-
 /* ========================================
    SETTINGS PAGE
 ======================================== */
@@ -2572,22 +2785,6 @@
   margin: 0;
   color: #77718e;
   font-size: 14px;
-}
-
-.settings-header-save {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  min-height: 45px;
-  padding: 0 20px;
-  border: none;
-  border-radius: 13px;
-  background: linear-gradient(110deg, #9855ee, #6e35e5);
-  color: #ffffff;
-  font-size: 12px;
-  font-weight: 700;
-  box-shadow: 0 6px 15px rgba(117, 70, 232, 0.2);
 }
 
 /* Main three-column layout */

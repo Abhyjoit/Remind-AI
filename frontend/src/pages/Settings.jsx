@@ -18,6 +18,31 @@ import {
   Save,
 } from "lucide-react";
 
+function SettingToggle({ label, icon: Icon, checked, onChange, setSaved }) {
+  return (
+    <div className="setting-toggle-row">
+      <div className="setting-toggle-label">
+        {Icon && <Icon size={22} />}
+        <span>{label}</span>
+      </div>
+
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        aria-label={label}
+        className={`setting-switch ${checked ? "is-on" : ""}`}
+        onClick={() => {
+          onChange(!checked);
+          setSaved(false);
+        }}
+      >
+        <span />
+      </button>
+    </div>
+  );
+}
+
 function Settings() {
   const [profile, setProfile] = useState({
     name: "Alex Johnson",
@@ -74,29 +99,6 @@ function Settings() {
     setEditingProfile(false);
     setSaved(true);
   };
-
-  const SettingToggle = ({ label, icon: Icon, checked, onChange }) => (
-    <div className="setting-toggle-row">
-      <div className="setting-toggle-label">
-        {Icon && <Icon size={22} />}
-        <span>{label}</span>
-      </div>
-
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        aria-label={label}
-        className={`setting-switch ${checked ? "is-on" : ""}`}
-        onClick={() => {
-          onChange(!checked);
-          setSaved(false);
-        }}
-      >
-        <span />
-      </button>
-    </div>
-  );
 
   return (
     <form className="page-content settings-page" onSubmit={saveSettings}>
@@ -357,18 +359,21 @@ function Settings() {
               icon={Mail}
               checked={emailNotifications}
               onChange={setEmailNotifications}
+              setSaved={setSaved}
             />
             <SettingToggle
               label="Call Reminders"
               icon={Bell}
               checked={callNotifications}
               onChange={setCallNotifications}
+              setSaved={setSaved}
             />
             <SettingToggle
               label="Task Updates"
               icon={CheckCircle2}
               checked={taskNotifications}
               onChange={setTaskNotifications}
+              setSaved={setSaved}
             />
           </div>
         </section>
@@ -505,11 +510,13 @@ function Settings() {
                   label="Require recipient consent"
                   checked={consentRequired}
                   onChange={setConsentRequired}
+                  setSaved={setSaved}
                 />
                 <SettingToggle
                   label="Respect opt-out requests"
                   checked={optOutProtection}
                   onChange={setOptOutProtection}
+                  setSaved={setSaved}
                 />
                 <p>
                   These are demo preferences. Actual call blocking and consent
